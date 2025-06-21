@@ -1,0 +1,575 @@
+{
+  "name": "Job Preparation Assistant(Diba)",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "16LRYnhEnmxZi5Aj8AthOW4kq1LPjBf7lgCQ2U1weraw",
+          "mode": "list",
+          "cachedResultName": "Job Post",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16LRYnhEnmxZi5Aj8AthOW4kq1LPjBf7lgCQ2U1weraw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16LRYnhEnmxZi5Aj8AthOW4kq1LPjBf7lgCQ2U1weraw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Link": "={{ $('RSS Read1').item.json.link }}",
+            "Date": "={{ $('RSS Read1').item.json.pubDate }}",
+            "Job Description": "={{ $('Pulling Information').item.json.message.content.job_requirements }}",
+            "Company Name": "={{ $('Pulling Information').item.json.message.content.company_name }}",
+            "Benefits": "={{ $('Pulling Information').item.json.message.content.benefits }}",
+            "Title": "={{ $('RSS Read1').item.json.title }}",
+            "Location": "={{ $('Pulling Information').item.json.message.content.location }}",
+            "Cover letter": "={{ $json.message.content }}",
+            "Job Requirement": "={{ $('Pulling Information').item.json.message.content.job_requirements }}"
+          },
+          "matchingColumns": [
+            "Link"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Description",
+              "displayName": "Job Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Benefits",
+              "displayName": "Benefits",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Requirement",
+              "displayName": "Job Requirement",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cover letter",
+              "displayName": "Cover letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1000,
+        -440
+      ],
+      "id": "2f8923ba-c185-46ac-9ec9-e7fcd4335cf0",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iiIQ69TTKTQ2bFOA",
+          "name": "Diba-Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        -260
+      ],
+      "id": "246c68fd-d53d-4ff2-8a74-fe1b1bd48645",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        -280
+      ],
+      "id": "db9dc7ce-ee5c-48f6-942b-6aad54f84ad9",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a intelligent bot capable of pulling data from a job listing s",
+              "role": "system"
+            },
+            {
+              "content": "=Here's the job site:\n {{ $json.data }}"
+            },
+            {
+              "content": "=You are a job information extraction assistant. Your task is to analyze job postings and extract key information in a structured JSON format.\n\nInstructions:\n1. Carefully read the entire job posting provided\n2. Extract the requested information accurately\n3. If any information is not available or unclear, use \"Not specified\" as the value\n4. For job description, create a concise summary that captures the main role and responsibilities\n5. For benefits, list all mentioned perks, compensation details, work arrangements, and advantages\n6. For location, look for city, state, country, or remote work mentions\n\nOutput Format:\nPlease output data in JSON format using the following structure:\n\n```json\n{\n  \"company_name\": \"\",\n  \"benefits\": \"\", // separate multiple benefits with commas\n  \"job_description\": \"\", // make it exactly 200 characters long, summarizing the main role and key responsibilities\n  \"job_requirements\": \"\", // separate multiple requirements with commas\n  \"location\": \"\"\n}\n```\n\nGuidelines:\n- company_name: Extract the exact company name mentioned in the job posting\n- benefits: List all benefits, perks, work arrangements, and advantages mentioned (separate with commas)\n- job_description: Create a 200-character summary focusing on the main role, key responsibilities, and what the position involves\n- job_requirements: Extract all qualifications, skills, experience, education, and technical requirements mentioned (separate with commas)\n- location: Include city, state, country, or mention \"Remote\" if it's a remote position\n\nExample Processing:\n- If benefits mention \"flexible schedule, remote work, competitive salary, health benefits\", the benefits field should be: \"flexible schedule, remote work, competitive salary, health benefits\"\n- If requirements mention \"Bachelor's degree, 3+ years Python experience, code review experience\", the job_requirements field should be: \"Bachelor's degree, 3+ years Python experience, code review experience\"\n\nNow process the job posting and return the extracted information in the specified JSON format.",
+              "role": "assistant"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        180,
+        -440
+      ],
+      "id": "57d17792-855a-44f4-ba31-02e63c5748d6",
+      "name": "Pulling Information",
+      "credentials": {
+        "openAiApi": {
+          "id": "34s3Phj8vvVzB5Pn",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a professional cover letter writer. Generate a personalized, compelling cover letter based on the provided job information. The cover letter should be professional, engaging, and tailored to the specific role and company. Structure it with a proper greeting, 3-4 paragraphs highlighting relevant skills and experience, and a strong closing. Keep it concise (250-400 words) and avoid generic phrases. Make it sound authentic and enthusiastic about the opportunity.",
+              "role": "system"
+            },
+            {
+              "content": "=Generate a cover letter for this job:\nCompany:{{ $json.message.content.company_name }} \nJob Description:{{ $json.message.content.job_description }} \nLocation: {{ $json.message.content.location }}\nBenefits: {{ $json.message.content.benefits }}\nCandidate Profile:\\n- Name: Diba Saha\\n- Education: BSc in Information and Communication Engineering (2020-2025), NSTU, CGPA: 3.58/4.00\\n- Current Experience: Software Development Intern at Business Automation LTD (Jan-Mar 2025)\\n- Technical Skills: Python, C, C++, JavaScript, HTML, CSS, Java, SQL, PHP, React JS, Machine Learning (SKlearn, TensorFlow, Pandas, NumPy), N8N Automation\\n- Tools: Adobe Creative Suite, Microsoft Office, Power BI, AutoCAD\\n- Coding Practice: LeetCode (500+ problems), HackerRank (5-star Python, 4-star Algorithms)\\n- Key Projects: Hospital Management System, Cardio Disease Prediction (ML), Quotes Generator (Web App), Contact Book (Python CLI)\\n- Additional Training: Networking & Communication (Bangladesh Telecommunications Limited)\\n- Certifications: Machine Learning with Python (IBM/Coursera), Data Visualization Competition Certificate\\n- Contact: dibasaha84@gmail.com, linkedin.com/in/diba-saha, github.com/dibasaha207\\n- Location: Noakhali, Bangladesh\\n\\nPlease write a professional cover letter that connects my educational background, internship experience, technical projects, and coding skills with this specific role and company. Highlight relevant programming languages, frameworks, and project experience that align with the job requirements."
+            },
+            {
+              "content": "=Generate a cover letter for this job:\n\nCompany: {{ $json.message.content.company_name }}\nJob Description: {{ $json.message.content.job_description }}\nLocation: {{ $json.message.content.location }}\nBenefits: {{ $json.message.content.benefits }}\n\nCandidate Profile:\n- Name: Diba Saha\n- Education: BSc in Information and Communication Engineering (2020-2025), NSTU, CGPA: 3.58/4.00\n- Current Experience: Software Development Intern at Business Automation LTD (Jan-Mar 2025)\n- Technical Skills: Python, C, C++, JavaScript, HTML, CSS, Java, SQL, PHP, React JS, Machine Learning (SKlearn, TensorFlow, Pandas, NumPy), N8N Automation\n- Tools: Adobe Creative Suite, Microsoft Office, Power BI, AutoCAD\n- Coding Practice: LeetCode (500+ problems), HackerRank (5-star Python, 4-star Algorithms)\n- Key Projects: Hospital Management System, Cardio Disease Prediction (ML), Quotes Generator (Web App), Contact Book (Python CLI)\n- Additional Training: Networking & Communication (Bangladesh Telecommunications Limited)\n- Certifications: Machine Learning with Python (IBM/Coursera), Data Visualization Competition Certificate\n- Contact: dibasaha84@gmail.com, linkedin.com/in/diba-saha, github.com/dibasaha207\n- Location: Noakhali, Bangladesh\n\nPlease write a professional cover letter that connects my educational background, internship experience, technical projects, and coding skills with this specific role and company. Highlight relevant programming languages, frameworks, and project experience that align with the job requirements.",
+              "role": "assistant"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        580,
+        -440
+      ],
+      "id": "80f15265-3d84-4aa1-a29e-bc68647c22b0",
+      "name": "Format Cover Letter",
+      "credentials": {
+        "openAiApi": {
+          "id": "34s3Phj8vvVzB5Pn",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1020,
+        20
+      ],
+      "id": "8faa11ff-806c-4210-be0d-dfafe89e93fe",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "url": "=https://rss.app/feeds/A6g9UN8iaELp7P4S.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -1100,
+        -260
+      ],
+      "id": "0834cf8c-ad95-4766-a5fb-43f16f2ca4d4",
+      "name": "RSS Read1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "54940684-8480-465c-bd53-7155bb7da1f2",
+              "name": "RSS",
+              "value": "[\"https://rss.app/feeds/GbYwk3VsiTgJcaFZ.xml\",\"https://rss.app/feeds/w1vk64JJd3YSQwkR.xml\"]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -800,
+        20
+      ],
+      "id": "c3d8f316-89b2-452d-9839-997a7a2e03f9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "RSS",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        20
+      ],
+      "id": "02afc14f-e621-406c-8f0e-83d7596add02",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are an expert career coach and technical interview specialist. Your task is to create concise, professional interview preparation guidance for job candidates.\n\nCRITICAL FORMATTING RULES:\n- NO markdown symbols (#, *, -, etc.) in the body\n- NO emojis or special characters\n- Use plain text formatting with clear sections\n- Keep the body under 1000 words\n- Use formal, professional language\n- Structure with numbered sections and clear headings\n- Return response as valid JSON format only\n\nCreate a focused preparation email that covers essential interview elements without unnecessary formatting.",
+              "role": "system"
+            },
+            {
+              "content": "=Create a concise interview preparation guide for this position:\n\nCompany: {{ $json.message.content.company_name }}\nJob Description:  {{ $json.message.content.job_description }} \nJob Requirements: {{ $json.message.content.job_requirements }}\nLocation: {{ $json.message.content.location }}\n\nProvide your response as valid JSON in this EXACT format:\n\n{\n  \"subject\": \"Professional email subject that includes the company name and position\",\n  \"body\": \"Email body content with these sections: 1. Key Technical Interview Questions (5-8 questions max), 2. Important Behavioral Questions (4-6 questions max), 3. Technical Skills to Review, 4. Written Exam Preparation Tips, 5. Final Interview Tips. Keep under 800 words with plain text formatting and clear section breaks.\"\n}\n\nReturn ONLY the JSON object, no additional text or formatting."
+            },
+            {
+              "content": "={\n  \"subject\": \"Interview Preparation Guide - Software Engineer Position at Data Edge Limited\",\n  \"body\": \"Dear Candidate,\\n\\nI hope this message finds you well. I have prepared a focused interview preparation guide for your upcoming interview.\\n\\nTECHNICAL INTERVIEW QUESTIONS\\n\\n1. Explain the key differences between .NET Framework and .NET Core\\n2. How do you handle exceptions in .NET applications\\n3. What are clustered vs non-clustered indexes in SQL Server\\n4. Describe your experience with SSIS data pipelines\\n5. How do you optimize SQL query performance\\n6. Explain object-oriented programming concepts like inheritance and polymorphism\\n\\nBEHAVIORAL INTERVIEW QUESTIONS\\n\\n1. Describe a challenging technical project you completed and the outcome\\n2. How do you prioritize tasks when managing multiple deadlines\\n3. Tell me about a time you had to learn new technology quickly\\n4. Give an example of how you resolved a team conflict\\n5. How do you handle constructive feedback on your work\\n\\nTECHNICAL SKILLS TO REVIEW\\n\\nFocus your preparation on .NET development fundamentals, SQL Server database operations, SSIS package creation, web technologies including HTML CSS and JavaScript, and object-oriented programming principles.\\n\\nWRITTEN EXAM PREPARATION\\n\\nPractice coding exercises on platforms like LeetCode focusing on .NET and SQL problems. Review common algorithms and data structures. Prepare for database design scenarios and SQL query optimization questions.\\n\\nFINAL INTERVIEW TIPS\\n\\nResearch the company background and recent projects. Prepare specific examples from your experience that demonstrate problem-solving skills. Have thoughtful questions ready about the team structure and project methodologies. Arrive early and maintain professional communication throughout the process.\\n\\nBest regards,\\nCareer Preparation Team\"\n}",
+              "role": "assistant"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        260,
+        -140
+      ],
+      "id": "88d18762-5644-4952-b907-53ce561d29d4",
+      "name": "Interview Prep",
+      "credentials": {
+        "openAiApi": {
+          "id": "34s3Phj8vvVzB5Pn",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "dibasaha84@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        900,
+        -140
+      ],
+      "id": "49552b42-3486-4205-96c6-72ba7995bef4",
+      "name": "Gmail",
+      "webhookId": "f371c36d-d854-426f-8456-4db140fa6922",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4abSPqxEKWGAt6hS",
+          "name": "Diba-Gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the OpenAI response\nconst openaiResponse = $input.all()[0].json;\n\n// Extract the content from the message\nconst content = openaiResponse.message.content;\n\n// Parse the JSON string\nlet parsedContent;\ntry {\n  parsedContent = JSON.parse(content);\n} catch (error) {\n  // If parsing fails, return error\n  return [{\n    json: {\n      subject: \"Interview Preparation Guide\",\n      body: \"Error parsing response: \" + content,\n      error: error.message\n    }\n  }];\n}\n\n// Return the parsed subject and body\nreturn [{\n  json: {\n    subject: parsedContent.subject,\n    body: parsedContent.body\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        -140
+      ],
+      "id": "c63a052a-06ad-4607-9b2b-14e92b12b411",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst processedItems = [];\n\nfor (let i = 0; i < items.length; i++) {\n  const item = items[i];\n  processedItems.push({\n    json: {\n      ...item.json,\n      itemIndex: i + 1,\n      totalItems: items.length,\n      isLastItem: i === items.length - 1\n    }\n  });\n}\n\nreturn processedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -680,
+        -260
+      ],
+      "id": "2fc5603b-3674-4419-9115-274e3f496837",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -460,
+        -260
+      ],
+      "id": "ed770a4b-2c9b-4ede-a530-9983c2ea2734",
+      "name": "Loop Over Items"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Pulling Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pulling Information": {
+      "main": [
+        [
+          {
+            "node": "Format Cover Letter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Interview Prep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Cover Letter": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "RSS Read1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        []
+      ]
+    },
+    "RSS Read1": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interview Prep": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RSS Read1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4c3e4abe-6589-4bf9-b822-b097070133d6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b1b3b6962659881ba56842bd186156e739ee49465032539adf6dd86734a8d47a"
+  },
+  "id": "NIn4n0hAVw1ZDzLs",
+  "tags": []
+}
